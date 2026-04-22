@@ -100,7 +100,14 @@
                     options: {
                         responsive: true,
                         plugins: {
-                            legend: { display: false }
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return '$ ' + context.parsed.y.toFixed(2);
+                                    }
+                                }
+                            }
                         },
                         scales: {
                             x: { ticks: { color: 'white' } },
