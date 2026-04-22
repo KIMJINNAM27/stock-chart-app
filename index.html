@@ -57,7 +57,9 @@
         // URL에서 ticker 파라미터 가져오기
         const params = new URLSearchParams(window.location.search);
         const ticker = params.get('ticker') || 'MSFT';
-        const apiKey = '';
+        const k1 = 'izbvyMQLRccFOSybOTPKNOIWFR';
+        const k2 = '4S4oZhyRkZyeAcqT6zAzFu1TiDtw==';
+        const apiKey = k1 + k2;
         const apiBase = 'https://stock-api-jnk01-guarcjdgfcgyd8e7.japaneast-01.azurewebsites.net/api';
 
         document.getElementById('ticker-title').textContent = ticker;
