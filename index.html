@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .periods {
+            display: flex;
+            gap: 10px;
+        }
+        .period-btn {
+            padding: 5px 15px;
+            border: 1px solid rgb(75, 192, 192);
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .period-btn.active {
+            background: rgb(75, 192, 192);
+        }
+        canvas {
+            width: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2 id="ticker-title">Loading...</h2>
+        <div class="periods">
+            <button class="period-btn active" onclick="loadChart('1d')">1일</button>
+            <button class="period-btn" onclick="loadChart('5d')">5일</button>
+            <button class="period-btn" onclick="loadChart('1w')">1주</button>
+            <button class="period-btn" onclick="loadChart('1mo')">1달</button>
+            <button class="period-btn" onclick="loadChart('6mo')">6개월</button>
+            <button class="period-btn" onclick="loadChart('1y')">1년</button>
+        </div>
+    </div>
+    <canvas id="myChart"></canvas>
+
+    <script>
+        // URL에서 ticker 파라미터 가져오기
+        const params = new URLSearchParams(window.location.search);
+        const ticker = params.get('ticker') || 'MSFT';
+        const apiKey = '';
+        const apiBase = 'https://stock-api-jnk01-guarcjdgfcgyd8e7.japaneast-01.azurewebsites.net/api';
+
+        document.getElementById('ticker-title').textContent = ticker;
+
+        let chart = null;
+
+        async function loadChart(period) {
+            // 버튼 활성화 상태 변경
+            document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // API에서 히스토리 데이터 가져오기
+            const response = await fetch(`${apiBase}/get_history?ticker=${ticker}&period=${period}&code=${apiKey}`);
+            const data = await response.json();
+
+            const labels = data.map(d => d.time);
+            const prices = data.map(d => d.close);
+
+            // 차트가 이미 있으면 업데이트, 없으면 새로 생성
+            if (chart) {
+                chart.data.labels = labels;
+                chart.data.datasets[0].data = prices;
+                chart.update();
+            } else {
+                chart = new Chart(document.getElementById('myChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: ticker,
+                            data: prices,
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: { ticks: { color: 'white' } },
+                            y: { ticks: { color: 'white' } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 페이지 로드시 1일 차트 자동 로드
+        loadChart('1d');
+    </script>
+</body>
+</html>
