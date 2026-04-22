@@ -43,12 +43,12 @@
     <div class="header">
         <h2 id="ticker-title">Loading...</h2>
         <div class="periods">
-            <button class="period-btn active" onclick="loadChart('1d')">1일</button>
-            <button class="period-btn" onclick="loadChart('5d')">5일</button>
-            <button class="period-btn" onclick="loadChart('1w')">1주</button>
-            <button class="period-btn" onclick="loadChart('1mo')">1달</button>
-            <button class="period-btn" onclick="loadChart('6mo')">6개월</button>
-            <button class="period-btn" onclick="loadChart('1y')">1년</button>
+            <button class="period-btn active" onclick="loadChart('1d', this)">1일</button>
+            <button class="period-btn" onclick="loadChart('5d', this)">5일</button>
+            <button class="period-btn" onclick="loadChart('1w', this)">1주</button>
+            <button class="period-btn" onclick="loadChart('1mo', this)">1달</button>
+            <button class="period-btn" onclick="loadChart('6mo', this)">6개월</button>
+            <button class="period-btn" onclick="loadChart('1y', this)">1년</button>
         </div>
     </div>
     <canvas id="myChart"></canvas>
@@ -66,10 +66,10 @@
 
         let chart = null;
 
-        async function loadChart(period) {
+        async function loadChart(period, btn) {
             // 버튼 활성화 상태 변경
-            document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
 
             // API에서 히스토리 데이터 가져오기
             const response = await fetch(`${apiBase}/get_history?ticker=${ticker}&period=${period}&code=${apiKey}`);
@@ -112,7 +112,7 @@
         }
 
         // 페이지 로드시 1일 차트 자동 로드
-        loadChart('1d');
+        loadChart('1d', document.querySelector('.period-btn.active'));
     </script>
 </body>
 </html>
